@@ -1,0 +1,21 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: specforge-postgres
+    environment:
+      POSTGRES_DB: specforge
+      POSTGRES_USER: specforge
+      POSTGRES_PASSWORD: specforge
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  redis:
+    image: redis:7-alpine
+    container_name: specforge-redis
+    ports:
+      - "6379:6379"
+
+volumes:
+  postgres_data:

@@ -1,0 +1,16 @@
+# PostgreSQL
+spring.datasource.url=jdbc:postgresql://localhost:5432/specforge
+spring.datasource.username=specforge
+spring.datasource.password=specforge
+spring.jpa.hibernate.ddl-auto=update
+spring.jpa.show-sql=true
+spring.jpa.open-in-view=false
+
+# Redis
+spring.data.redis.host=localhost
+spring.data.redis.port=6379
+
+# App
+spring.application.name=specforge
+server.port=8080
+github.token = your_github_token_here
