@@ -11,7 +11,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-
+import com.jesuspartal.specforge.application.service.SpecDiffService;
+import com.jesuspartal.specforge.api.dto.SpecDiffResponse;
 
 import java.util.List;
 
@@ -25,7 +26,7 @@ public class SpecController {
     private final PostmanCollectionService postmanCollectionService;
     private final TestSkeletonService testSkeletonService;
     private final OrgScanService orgScanService;
-
+    private final SpecDiffService specDiffService;
 
     @GetMapping
     @Operation(tags = "specs", summary = "List all specs")
@@ -84,5 +85,15 @@ public class SpecController {
     @ApiResponse(responseCode = "200", description = "Scan result")
     public ResponseEntity<OrgScanResponse> scanOrg(@RequestParam String org) {
         return ResponseEntity.ok(orgScanService.scan(org));
+    }
+
+    @GetMapping("/diff")
+    @Operation(tags = "specs", summary = "Diff two spec versions for breaking changes")
+    @Parameter(name = "oldId", description = "Old spec ID", required = true)
+    @Parameter(name = "newId", description = "New spec ID", required = true)
+    @ApiResponse(responseCode = "200", description = "Diff result")
+    public ResponseEntity<SpecDiffResponse> diffSpecs(
+            @RequestParam Long oldId, @RequestParam Long newId) {
+        return ResponseEntity.ok(specDiffService.diff(oldId, newId));
     }
 }
