@@ -15,10 +15,17 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(auth -> auth
-                        .anyRequest().permitAll()
+                        .requestMatchers("/", "/login/**", "/oauth2/**", "/error",
+                                "/api-docs/**", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
+                        .anyRequest().authenticated()
                 )
-                .csrf(AbstractHttpConfigurer::disable);
-
+                .oauth2Login(login -> login
+                        .defaultSuccessUrl("/api/specs", true)
+                )
+                .logout(logout -> logout
+                        .logoutSuccessUrl("/")
+                );
         return http.build();
+
     }
 }

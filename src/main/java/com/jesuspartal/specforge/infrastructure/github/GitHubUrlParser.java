@@ -1,5 +1,7 @@
 package com.jesuspartal.specforge.infrastructure.github;
 
+import com.jesuspartal.specforge.exception.InvalidGitHubUrlException;
+
 public class GitHubUrlParser {
 
     public record RepoCoordinates(String owner, String repo) {}
@@ -14,7 +16,7 @@ public class GitHubUrlParser {
         String[] parts = cleaned.split("/");
 
         if (parts.length < 2) {
-            throw new IllegalArgumentException("Invalid GitHub URL: " + url);
+            throw new InvalidGitHubUrlException(url);
         }
 
         return new RepoCoordinates(parts[0], parts[1]);

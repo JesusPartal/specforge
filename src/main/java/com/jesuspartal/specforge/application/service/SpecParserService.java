@@ -2,12 +2,15 @@ package com.jesuspartal.specforge.application.service;
 
 import com.jesuspartal.specforge.api.dto.SpecSummaryResponse;
 import com.jesuspartal.specforge.api.dto.SpecSummaryResponse.EndpointSummary;
+import com.jesuspartal.specforge.exception.SpecNotFoundException;
+import com.jesuspartal.specforge.exception.SpecParseException;
 import com.jesuspartal.specforge.infrastructure.repository.SpecRepository;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.PathItem;
 import io.swagger.v3.parser.OpenAPIV3Parser;
 import io.swagger.v3.parser.core.models.ParseOptions;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -20,9 +23,10 @@ public class SpecParserService {
 
     private final SpecRepository specRepository;
 
+    @Cacheable(value = "spec-summaries", key = "#specId")
     public SpecSummaryResponse summarize(Long specId) {
         String rawContent = specRepository.findById(specId)
-                .orElseThrow(() -> new RuntimeException("Spec not found: " + specId))
+                .orElseThrow(() -> new SpecNotFoundException(specId))
                 .getRawContent();
 
         ParseOptions options = new ParseOptions();
@@ -31,7 +35,7 @@ public class SpecParserService {
         OpenAPI openAPI = new OpenAPIV3Parser().readContents(rawContent, null, options).getOpenAPI();
 
         if (openAPI == null) {
-            throw new RuntimeException("Failed to parse OpenAPI spec for id: " + specId);
+            throw new SpecParseException(specId, null);
         }
 
         String title = openAPI.getInfo() != null ? openAPI.getInfo().getTitle() : "Unknown";
