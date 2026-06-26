@@ -26,11 +26,8 @@ public class OrgScanService {
         List<RepoWithoutSpec> withoutSpec = new ArrayList<>();
 
         for (var repo : repos) {
-            String repoUrl = "https://github.com/" + repo.fullName();
-            var found = specFileFinder.findSpec(
-                    repoUrl.split("/")[repoUrl.split("/").length - 2],
-                    repoUrl.split("/")[repoUrl.split("/").length - 1]
-            );
+            String[] parts = repo.fullName().split("/", 2);
+            var found = specFileFinder.findSpec(parts[0], parts[1]);
             if (found.isPresent()) {
                 withSpec.add(new RepoWithSpec(repo.name(), found.get().path(), repo.htmlUrl()));
             } else {

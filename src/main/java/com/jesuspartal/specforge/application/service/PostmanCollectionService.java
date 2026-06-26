@@ -18,12 +18,12 @@ import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
-@Cacheable(value = "spec-postman", key = "#specId")
 public class PostmanCollectionService {
 
     private final SpecRepository specRepository;
     private final ObjectMapper objectMapper;
 
+    @Cacheable(value = "spec-postman", key = "#specId")
     public ObjectNode generateCollection(Long specId) {
         String rawContent = specRepository.findById(specId)
                 .orElseThrow(() -> new SpecNotFoundException(specId))

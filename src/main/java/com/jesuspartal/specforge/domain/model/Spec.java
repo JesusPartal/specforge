@@ -3,14 +3,16 @@ package com.jesuspartal.specforge.domain.model;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "specs")
-@Data
+@Getter
+@Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -33,4 +35,7 @@ public class Spec {
 
     @Column(nullable = false)
     private LocalDateTime fetchedAt;
+
+    @Column(nullable = false)
+    private String ownerLogin;
 }

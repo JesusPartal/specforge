@@ -21,19 +21,24 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class SpecServiceTest {
 
+    private static final String TEST_USER = "testuser";
+
     @Mock
     private SpecRepository specRepository;
     @Mock
     private SpecFileFinder specFileFinder;
+    @Mock
+    private OAuth2TokenService oAuth2TokenService;
 
     @InjectMocks
     private SpecService service;
 
     @Test
     void shouldCreateSpec() {
+        when(oAuth2TokenService.getCurrentUserLogin()).thenReturn(TEST_USER);
         Spec spec = Spec.builder()
                 .id(1L).repoUrl("https://github.com/test/api").title("Test").version("1.0")
-                .fetchedAt(LocalDateTime.now()).build();
+                .fetchedAt(LocalDateTime.now()).ownerLogin(TEST_USER).build();
         when(specRepository.save(any())).thenReturn(spec);
 
         var result = service.createSpec(new SpecRequest("https://github.com/test/api", "Test", "1.0", null));
@@ -44,10 +49,11 @@ class SpecServiceTest {
 
     @Test
     void shouldGetAllSpecs() {
+        when(oAuth2TokenService.getCurrentUserLogin()).thenReturn(TEST_USER);
         Spec spec = Spec.builder()
                 .id(1L).repoUrl("https://github.com/test/api").title("Test").version("1.0")
-                .fetchedAt(LocalDateTime.now()).build();
-        when(specRepository.findAll()).thenReturn(List.of(spec));
+                .fetchedAt(LocalDateTime.now()).ownerLogin(TEST_USER).build();
+        when(specRepository.findByOwnerLogin(TEST_USER)).thenReturn(List.of(spec));
 
         var results = service.getAllSpecs();
 
@@ -58,11 +64,12 @@ class SpecServiceTest {
     @Test
     void shouldFetchAndSaveSpec() {
         String url = "https://github.com/owner/repo";
+        when(oAuth2TokenService.getCurrentUserLogin()).thenReturn(TEST_USER);
         when(specFileFinder.findSpec("owner", "repo"))
                 .thenReturn(Optional.of(new FoundSpec("openapi.yaml", "content")));
         Spec spec = Spec.builder()
                 .id(1L).repoUrl(url).title("owner/repo").version("unknown")
-                .rawContent("content").fetchedAt(LocalDateTime.now()).build();
+                .rawContent("content").fetchedAt(LocalDateTime.now()).ownerLogin(TEST_USER).build();
         when(specRepository.save(any())).thenReturn(spec);
 
         var result = service.fetchAndSaveSpec(url);

@@ -20,9 +20,17 @@ public class OAuth2TokenService {
                     oauthToken.getAuthorizedClientRegistrationId(),
                     oauthToken.getName()
             );
-            if (client != null) {
+            if (client != null && client.getAccessToken() != null) {
                 return client.getAccessToken().getTokenValue();
             }
+        }
+        return null;
+    }
+
+    public String getCurrentUserLogin() {
+        var auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth instanceof OAuth2AuthenticationToken oauthToken) {
+            return oauthToken.getPrincipal().getAttribute("login");
         }
         return null;
     }

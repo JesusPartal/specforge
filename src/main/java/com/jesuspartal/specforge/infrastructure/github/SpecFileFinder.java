@@ -1,11 +1,14 @@
 package com.jesuspartal.specforge.infrastructure.github;
 
+import com.jesuspartal.specforge.exception.GitHubApiException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Optional;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class SpecFileFinder {
@@ -32,8 +35,8 @@ public class SpecFileFinder {
                 if (content != null && !content.isBlank()) {
                     return Optional.of(new FoundSpec(path, content));
                 }
-            } catch (Exception e) {
-                // fichero no encontrado en esta ruta, intentamos la siguiente
+            } catch (GitHubApiException e) {
+                log.debug("Spec file not found at path: {}", path);
             }
         }
         return Optional.empty();

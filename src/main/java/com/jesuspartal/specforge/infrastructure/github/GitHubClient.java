@@ -32,6 +32,7 @@ public class GitHubClient {
     }
 
     public List<GitHubRepoResponse> listOrgRepos(String org) {
+        rateLimiterService.checkAndConsume();
         return gitHubRestClient.get()
                 .uri("/orgs/{org}/repos?per_page=100&sort=updated", org)
                 .retrieve()

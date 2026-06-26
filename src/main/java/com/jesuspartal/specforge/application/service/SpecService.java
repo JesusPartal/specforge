@@ -23,29 +23,33 @@ public class SpecService {
 
     private final SpecRepository specRepository;
     private final SpecFileFinder specFileFinder;
+    private final OAuth2TokenService oAuth2TokenService;
 
-    @Cacheable(value = "specs-all")
+    @Cacheable(value = "specs-all", key = "#root.target.oAuth2TokenService.currentUserLogin")
     public List<SpecResponse> getAllSpecs() {
-        return specRepository.findAll()
+        String login = oAuth2TokenService.getCurrentUserLogin();
+        return specRepository.findByOwnerLogin(login)
                 .stream()
                 .map(this::toResponse)
                 .toList();
     }
 
-    @CacheEvict(value = "specs-all", allEntries = true)
+    @CacheEvict(value = "specs-all", key = "#root.target.oAuth2TokenService.currentUserLogin")
     public SpecResponse createSpec(SpecRequest request) {
+        String login = oAuth2TokenService.getCurrentUserLogin();
         Spec spec = Spec.builder()
                 .repoUrl(request.repoUrl())
                 .title(request.title())
                 .version(request.version())
                 .rawContent(request.rawContent())
                 .fetchedAt(LocalDateTime.now())
+                .ownerLogin(login)
                 .build();
 
         return toResponse(specRepository.save(spec));
     }
 
-    @CacheEvict(value = "specs-all", allEntries = true)
+    @CacheEvict(value = "specs-all", key = "#root.target.oAuth2TokenService.currentUserLogin")
     public SpecResponse fetchAndSaveSpec(String repoUrl) {
         RepoCoordinates coords = GitHubUrlParser.parse(repoUrl);
 
@@ -55,12 +59,14 @@ public class SpecService {
                         "No OpenAPI spec found in repository: " + repoUrl
                 ));
 
+        String login = oAuth2TokenService.getCurrentUserLogin();
         Spec spec = Spec.builder()
                 .repoUrl(repoUrl)
                 .title(coords.owner() + "/" + coords.repo())
                 .version("unknown")
                 .rawContent(foundSpec.content())
                 .fetchedAt(LocalDateTime.now())
+                .ownerLogin(login)
                 .build();
 
         return toResponse(specRepository.save(spec));

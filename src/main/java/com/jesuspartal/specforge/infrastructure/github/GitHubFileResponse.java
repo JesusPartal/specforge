@@ -1,5 +1,7 @@
 package com.jesuspartal.specforge.infrastructure.github;
 
+import com.jesuspartal.specforge.exception.GitHubApiException;
+
 import java.util.Base64;
 
 public record GitHubFileResponse(
@@ -9,7 +11,9 @@ public record GitHubFileResponse(
         String encoding
 ) {
     public String decodeContent() {
-        String cleaned = content.replaceAll("\\s", "");
-        return new String(Base64.getDecoder().decode(cleaned));
+        if (content == null) {
+            throw new GitHubApiException("File content is null for path: " + path, null);
+        }
+        return new String(Base64.getMimeDecoder().decode(content));
     }
 }

@@ -52,9 +52,11 @@ class SpecControllerTest {
     @MockitoBean
     private PostmanCollectionService postmanCollectionService;
     @MockitoBean
-    private ExampleGeneratorService exampleGeneratorService;
-    @MockitoBean
     private TestSkeletonService testSkeletonService;
+    @MockitoBean
+    private OrgScanService orgScanService;
+    @MockitoBean
+    private SpecDiffService specDiffService;
 
     @Test
     @WithMockUser
