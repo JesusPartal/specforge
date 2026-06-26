@@ -5,7 +5,9 @@ import com.jesuspartal.specforge.exception.GitHubApiException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
+import org.springframework.core.ParameterizedTypeReference;
 
+import java.util.List;
 import java.util.Objects;
 
 @Component
@@ -27,5 +29,12 @@ public class GitHubClient {
             throw new GitHubApiException(
                     "GitHub API error for " + owner + "/" + repo + "/" + filePath, e);
         }
+    }
+
+    public List<GitHubRepoResponse> listOrgRepos(String org) {
+        return gitHubRestClient.get()
+                .uri("/orgs/{org}/repos?per_page=100&sort=updated", org)
+                .retrieve()
+                .body(new ParameterizedTypeReference<List<GitHubRepoResponse>>() {});
     }
 }

@@ -1,11 +1,7 @@
 package com.jesuspartal.specforge.api.controller;
 
-import com.jesuspartal.specforge.api.dto.SpecRequest;
-import com.jesuspartal.specforge.api.dto.SpecResponse;
-import com.jesuspartal.specforge.api.dto.SpecSummaryResponse;
-import com.jesuspartal.specforge.application.service.PostmanCollectionService;
-import com.jesuspartal.specforge.application.service.SpecParserService;
-import com.jesuspartal.specforge.application.service.SpecService;
+import com.jesuspartal.specforge.api.dto.*;
+import com.jesuspartal.specforge.application.service.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.validation.Valid;
@@ -15,8 +11,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import com.jesuspartal.specforge.api.dto.TestSkeletonResponse;
-import com.jesuspartal.specforge.application.service.TestSkeletonService;
 
 
 import java.util.List;
@@ -30,6 +24,7 @@ public class SpecController {
     private final SpecParserService specParserService;
     private final PostmanCollectionService postmanCollectionService;
     private final TestSkeletonService testSkeletonService;
+    private final OrgScanService orgScanService;
 
 
     @GetMapping
@@ -81,5 +76,13 @@ public class SpecController {
     @ApiResponse(responseCode = "404", description = "Spec not found")
     public ResponseEntity<TestSkeletonResponse> generateTests(@PathVariable Long id) {
         return ResponseEntity.ok(testSkeletonService.generateTests(id));
+    }
+
+    @GetMapping("/scan-org")
+    @Operation(tags = "specs", summary = "Scan org repos for OpenAPI specs")
+    @Parameter(name = "org", description = "GitHub organization name", required = true)
+    @ApiResponse(responseCode = "200", description = "Scan result")
+    public ResponseEntity<OrgScanResponse> scanOrg(@RequestParam String org) {
+        return ResponseEntity.ok(orgScanService.scan(org));
     }
 }
