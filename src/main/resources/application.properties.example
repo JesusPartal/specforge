@@ -13,4 +13,22 @@ spring.data.redis.port=6379
 # App
 spring.application.name=specforge
 server.port=8080
-github.token = your_github_token_here
+
+# SpringDoc
+springdoc.api-docs.path=/api-docs
+springdoc.swagger-ui.path=/swagger-ui
+springdoc.swagger-ui.operationsSorter=method
+
+# Cache
+spring.cache.type=redis
+spring.cache.redis.time-to-live=3600000
+
+# OAuth2 GitHub
+spring.security.oauth2.client.registration.github.client-id=YOUR_CLIENT_ID
+spring.security.oauth2.client.registration.github.client-secret=YOUR_CLIENT_SECRET
+spring.security.oauth2.client.registration.github.scope=repo,read:user
+
+# Rate limiting (GitHub API)
+specforge.rate-limit.capacity=4500
+specforge.rate-limit.refill-period-minutes=60
+specforge.rate-limit.tokens-per-refill=4500
